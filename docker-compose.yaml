@@ -1,0 +1,29 @@
+services:
+  audaapp:
+    restart: always
+    ports:
+      - 8888:8888
+    build:
+      dockerfile: app.Dockerfile
+    environment:
+      - AUDA_BACKEND_HOST=0.0.0.0
+      - AUDA_BACKEND_PORT=8888
+      - AUDA_BACKEND_WORKERS=2
+    volumes:
+      - ./data/data:/app/data
+      - ./data/media:/app/media
+
+  audaweb:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+    restart: always
+    build:
+      dockerfile: web.Dockerfile
+      args:
+        - AUDA_BACKEND_URL=http://localhost:8888
+    ports:
+      - 80:80
+    environment:
+      - AUDA_BACKEND_URL=http://localhost:8888
+
+  
