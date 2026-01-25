@@ -13,8 +13,8 @@ services:
       - AUDA_BACKEND_ALLOWED_HOSTS=$SERVICE_FQDN_AUDAAPP
       - AUDA_BACKEND_TRUSTED_ORIGINS=$SERVICE_URL_AUDAWEB
     volumes:
-      - ./data/data:/app/data
-      - ./data/media:/app/media
+      - db:/app/data/
+      - media:/app/media/
 
   audaweb:
     healthcheck:
@@ -27,5 +27,8 @@ services:
     environment:
       - AUDA_BACKEND_URL=$SERVICE_URL_AUDAAPP
       - SERVICE_URL_AUDAWEB_80
+volumes:
+  db:
+  media:
 
   
