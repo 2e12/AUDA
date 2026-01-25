@@ -9,6 +9,9 @@ services:
       - AUDA_BACKEND_PORT=8888
       - SERVICE_URL_AUDAAPP_8888
       - AUDA_BACKEND_WORKERS=2
+      - AUDA_BACKEND_SECRET_KEY=$SERVICE_BASE64_128_AUDAAPP
+      - AUDA_BACKEND_ALLOWED_HOSTS=$SERVICE_FQDN_AUDAAPP
+      - AUDA_BACKEND_TRUSTED_ORIGINS=$SERVICE_URL_AUDAWEB
     volumes:
       - ./data/data:/app/data
       - ./data/media:/app/media

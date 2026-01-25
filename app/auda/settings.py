@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
+import os
 
 from pathlib import Path
 
@@ -20,17 +21,31 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=gcy+$)qrlm!rqie2q_3t%nl6+9r1jd_qi6ym%o_4jl0_i*jr$'
+SECRET_KEY = os.environ.get("AUDA_BACKEND_SECRET_KEY", "django-insecure-=gcy+$)qrlm!rqie2q_3t%nl6+9r1jd_qi6ym%o_4jl0_i*jr$'")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1"
-]
+allowed_hosts = os.environ.get('AUDA_BACKEND_ALLOWED_HOSTS', False)
+if allowed_hosts: 
+    allowed_hosts = allowed_hosts.split(' ')
+else: 
+    allowed_hosts = [
+        "localhost",
+        "127.0.0.1"
+    ]
+ALLOWED_HOSTS = allowed_hosts
 
-CORS_ALLOW_ALL_ORIGINS = True
+trusted_origins = os.environ.get('AUDA_BACKEND_TRUSTED_ORIGINS', False)
+if trusted_origins:
+    trusted_origins = trusted_origins.split(' ')
+else:
+    trusted_origins = [
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000"
+    ]
+CORS_ALLOWED_ORIGINS = trusted_origins
+CSRF_TRUSTED_ORIGINS = trusted_origins
 
 # Application definition
 
