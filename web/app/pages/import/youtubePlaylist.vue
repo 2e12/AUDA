@@ -1,19 +1,23 @@
 <template>
     <v-container class="fill-height">
-        <v-card class="align-center v-col-12" title="Upload" flat v-if="!loading && !videos">
-            <v-card-text>
-                Upload a new Track
+        <v-card class="align-center v-col-12" title="Import YouTube Playlist" flat v-if="!videos">
+            <v-card-text v-if="errorMessage">
+                <v-alert
+                    type="warning"
+                    variant="outlined"
+                    prominent
+                    >
+                    {{ errorMessage }}           
+                </v-alert>    
             </v-card-text>
             <v-card-text>
                 <v-text-field v-model="youtubePlaylistLink" prepend-icon="mdi-youtube" label="YouTube Playlist Link" variant="outlined"></v-text-field>
+                <v-text-field variant="outlined" label="Artist" v-model="artist"></v-text-field>
             </v-card-text>
             <template v-slot:actions>
-                <v-btn block @click="loadVideos" variant="flat" color="deep-purple-accent-4" type="submit">Upload</v-btn>
+                <v-btn block @click="loadVideos" :disabled="loading" :loading="loading" variant="flat" color="deep-purple-accent-4" type="submit">Upload</v-btn>
             </template>
         </v-card>
-        <div class="align-center v-col-12 d-flex justify-center flex-column" v-if="loading">
-            <v-progress-circular indeterminate class="mb-8" size="large"></v-progress-circular> Processing data
-        </div>
         <div class="align-center v-col-12" v-if="!loading && videos">
             <h1 class="mb-4">Playlist Details</h1>
             <v-text-field label="Playlist Name" v-model="playlist_name" variant="outlined"></v-text-field>
@@ -39,9 +43,12 @@ import apiFetch from '~/fetch';
 
 const router = useRouter()
 
+const errorMessage = ref(false)
+
 /* YouTube Playlist */
 const youtubePlaylistLink = ref("")
 const youtubeVideos = ref("")
+const artist = ref("")
 
 /* Video Preview */
 const videos = ref(false)
@@ -57,8 +64,13 @@ const loadVideos = async () => {
         body: {
             'youtube_playlist_link': youtubePlaylistLink.value
         },
+    }).catch((error) => {
+        errorMessage.value = `Error fetching data: ${error.message}`
     })
     videos.value = data.videos
+    if (artist.value) {
+        videos.value.forEach((video) => video.artist = artist.value)
+    }
     playlist_name.value = data.playlist_name
     loading.value = false
     youtubePlaylistLink.value = ""
@@ -80,6 +92,7 @@ const processData = async () => {
             body: {
                 "youtube_link": video.url,
                 "name": video.name,
+                "artist": video.artist,
                 "playlists": [playlist_id]
             },
             retry: 3,

@@ -122,7 +122,7 @@ class TrackViewSet(viewsets.ModelViewSet):
         if trackreq.data["artist"] == "":
             artist = yt.author
         else:
-            name = trackreq.data["artist"]
+            artist = trackreq.data["artist"]
 
         sound = AudioSegment.from_file(f"{folder}/{filename}.tmp", "mp4")
         sound.export(f"{folder}/{filename}", format="ogg", bitrate="128k")

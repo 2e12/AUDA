@@ -3,7 +3,6 @@
         <v-card class="align-center v-col-12" title="Import from Youtube" flat>
             <v-card-text v-if="errorMessage">
                 <v-alert
-                    border="top"
                     type="warning"
                     variant="outlined"
                     prominent
@@ -44,7 +43,6 @@ const upload = async (uploadFile, uploadName) => {
     }).finally(() => {
         loading.value = false
     }).catch((error) => {
-        debugger
         errorMessage.value = `Error fetching data: ${error.message}`
     })
     if(data) {
