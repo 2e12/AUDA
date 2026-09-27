@@ -32,7 +32,7 @@ def stream_audio(request, track_id):
     response = HttpResponse(
         data,
         status=status_code,
-        content_type="audio/mpeg"
+        content_type="audio/ogg"
     )
 
     response["Accept-Ranges"] = "bytes"

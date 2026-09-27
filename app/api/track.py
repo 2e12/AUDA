@@ -29,8 +29,9 @@ class TrackSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'artist', 'file', 'playlists']
 
 class YoutubeTrackSerializer(serializers.Serializer):
-    name = serializers.CharField()
     youtube_link = serializers.URLField()
+    name = serializers.CharField(allow_blank=True)
+    artist = serializers.CharField(allow_blank=True)
     playlists = serializers.ListField(child=serializers.IntegerField(), allow_empty=True)
 
 class TrackSliceSeralizer(serializers.Serializer):
@@ -105,16 +106,27 @@ class TrackViewSet(viewsets.ModelViewSet):
         trackreq = YoutubeTrackSerializer(data=request.data)
         if not trackreq.is_valid():
             return Response(status=400)
+        
         filename = f"{uuid4().hex}.ogg"
         folder = "media"
-        yt = YouTube(trackreq.data["youtube_link"], on_progress_callback = on_progress)
+
+        yt = YouTube(trackreq.data["youtube_link"], on_progress_callback = on_progress, client="WEB")
         ys = yt.streams.get_audio_only()
-        ys.download(filename=filename, output_path=folder)
-        artist = yt.author
+        ys.download(filename=f"{filename}.tmp", output_path=folder)
+        
         if trackreq.data["name"] == "":
             name = yt.title
         else:
             name = trackreq.data["name"]
+
+        if trackreq.data["artist"] == "":
+            artist = yt.author
+        else:
+            name = trackreq.data["artist"]
+
+        sound = AudioSegment.from_file(f"{folder}/{filename}.tmp", "mp4")
+        sound.export(f"{folder}/{filename}", format="ogg", bitrate="128k")
+        os.remove(f"{folder}/{filename}.tmp")
         track = Track(filename=f"{folder}/{filename}", name=name, file=f"{folder}/{filename}", artist=artist)
         track.save()
         for playlist_id in trackreq.data["playlists"]:
