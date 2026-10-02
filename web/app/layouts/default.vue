@@ -5,7 +5,12 @@
           <template v-slot:prepend>
             <v-app-bar-nav-icon @click="showNav = !showNav"></v-app-bar-nav-icon>
           </template>
-          <v-app-bar-title>Auda</v-app-bar-title>
+          <v-img
+            max-height="18"
+            max-width="80"
+            src="@/assets/audawhite.svg"
+          ></v-img>
+          <v-app-bar-title></v-app-bar-title>
         </v-app-bar>
         <v-navigation-drawer v-model="showNav">
           <v-list nav>

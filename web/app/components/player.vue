@@ -43,15 +43,18 @@
     let audioUrl
     const isPlaying = ref(false)
     const duration = ref(0)
-    const durationLabel = ref("0:0")
+    const durationLabel = ref("00:00")
     const currentTime = ref(0)
-    const timeLabel = ref("0:0")
+    const timeLabel = ref("00:00")
     let audio = new Audio()
-    const timeToLabel = (timeSeconds) => {
-        const minutes = Math.floor(timeSeconds / 60);
-        const seconds = Math.floor(timeSeconds - minutes * 60);
-        return minutes + ":" + seconds
-    }
+    const timeToLabel = (s) => {
+        const hours = Math.floor(s / 3600);
+        const minutes = Math.floor((s % 3600) / 60);
+        const seconds = Math.floor(s % 60);
+
+        return new Intl.DurationFormat("de-DE", { style: "digital" })
+            .format({ hours, minutes, seconds });
+    };
     const updateTime = () => {
         currentTime.value = audio.currentTime
         timeLabel.value = timeToLabel(currentTime.value)
